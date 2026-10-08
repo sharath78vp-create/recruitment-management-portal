@@ -11,7 +11,7 @@ const applicationRoutes = require("./routes/applicationRoutes");
 const app = express();
 
 console.log("Starting Recruitment Management Portal API...");
-console.log("PORT exists:", !!process.env.PORT);
+console.log("PORT value:", process.env.PORT);
 console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
 console.log("JWT_SECRET exists:", !!process.env.JWT_SECRET);
 
@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 
 const startServer = async () => {
   try {
