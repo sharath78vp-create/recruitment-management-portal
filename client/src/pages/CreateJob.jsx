@@ -38,25 +38,20 @@ function CreateJob() {
         company: formData.company,
         location: formData.location,
         description: formData.description,
-
         skills: formData.skills
           .split(",")
           .map((skill) => skill.trim())
           .filter(Boolean),
-
         salary: formData.salary,
         experience: formData.experience,
       });
 
       navigate("/recruiter-dashboard");
-
     } catch (error) {
-
       setError(
         error.response?.data?.message ||
           "Failed to create job. Please try again."
       );
-
     } finally {
       setLoading(false);
     }
@@ -64,22 +59,54 @@ function CreateJob() {
 
   return (
     <div className="dashboard-page">
-
       <Navbar />
 
       <main className="dashboard-container">
 
-        <div className="form-page-header">
+        <button
+          className="back-button"
+          onClick={() =>
+            navigate(
+              "/recruiter-dashboard"
+            )
+          }
+        >
+          ← Back to Dashboard
+        </button>
 
-          <h1>Post a New Job</h1>
+        <div className="form-page-header redesigned-form-header">
 
-          <p>
-            Create a job posting and start receiving applications.
-          </p>
+          <div>
+            <span className="eyebrow">
+              Recruiter workspace
+            </span>
+
+            <h1>Post a New Job</h1>
+
+            <p>
+              Create a clear job listing to
+              attract the right candidates.
+            </p>
+          </div>
 
         </div>
 
-        <div className="job-form-card">
+        <div className="job-form-card redesigned-job-form">
+
+          <div className="form-card-heading">
+            <div className="form-heading-icon">
+              +
+            </div>
+
+            <div>
+              <h2>Job Information</h2>
+
+              <p>
+                Provide the details candidates
+                need to know.
+              </p>
+            </div>
+          </div>
 
           {error && (
             <div className="error-message">
@@ -89,17 +116,15 @@ function CreateJob() {
 
           <form onSubmit={handleSubmit}>
 
-            {/* Job Title + Company */}
-
             <div className="form-row">
 
               <div className="form-group">
-
-                <label>
+                <label htmlFor="title">
                   Job Title
                 </label>
 
                 <input
+                  id="title"
                   type="text"
                   name="title"
                   placeholder="e.g. Software Developer"
@@ -107,16 +132,15 @@ function CreateJob() {
                   onChange={handleChange}
                   required
                 />
-
               </div>
 
               <div className="form-group">
-
-                <label>
+                <label htmlFor="company">
                   Company
                 </label>
 
                 <input
+                  id="company"
                   type="text"
                   name="company"
                   placeholder="e.g. Tech Solutions Pvt Ltd"
@@ -124,22 +148,19 @@ function CreateJob() {
                   onChange={handleChange}
                   required
                 />
-
               </div>
 
             </div>
 
-            {/* Location + Experience */}
-
             <div className="form-row">
 
               <div className="form-group">
-
-                <label>
+                <label htmlFor="location">
                   Location
                 </label>
 
                 <input
+                  id="location"
                   type="text"
                   name="location"
                   placeholder="e.g. Hyderabad"
@@ -147,88 +168,85 @@ function CreateJob() {
                   onChange={handleChange}
                   required
                 />
-
               </div>
 
               <div className="form-group">
-
-                <label>
+                <label htmlFor="experience">
                   Experience
                 </label>
 
                 <input
+                  id="experience"
                   type="text"
                   name="experience"
                   placeholder="e.g. Fresher / 1-2 years"
                   value={formData.experience}
                   onChange={handleChange}
                 />
-
               </div>
 
             </div>
 
-            {/* Salary */}
+            <div className="form-row">
 
-            <div className="form-group">
+              <div className="form-group">
+                <label htmlFor="salary">
+                  Salary
+                </label>
 
-              <label>
-                Salary
-              </label>
+                <input
+                  id="salary"
+                  type="text"
+                  name="salary"
+                  placeholder="e.g. 6-8 LPA"
+                  value={formData.salary}
+                  onChange={handleChange}
+                />
+              </div>
 
-              <input
-                type="text"
-                name="salary"
-                placeholder="e.g. 6-8 LPA"
-                value={formData.salary}
-                onChange={handleChange}
-              />
+              <div className="form-group">
+                <label htmlFor="skills">
+                  Required Skills
+                </label>
 
-            </div>
+                <input
+                  id="skills"
+                  type="text"
+                  name="skills"
+                  placeholder="Java, React, SQL, Node.js"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  required
+                />
 
-            {/* Skills */}
-
-            <div className="form-group">
-
-              <label>
-                Skills
-              </label>
-
-              <input
-                type="text"
-                name="skills"
-                placeholder="Java, React, SQL, Node.js"
-                value={formData.skills}
-                onChange={handleChange}
-                required
-              />
-
-              <small>
-                Separate skills using commas.
-              </small>
+                <small>
+                  Separate skills using commas.
+                </small>
+              </div>
 
             </div>
 
-            {/* Description */}
-
             <div className="form-group">
-
-              <label>
+              <label htmlFor="description">
                 Job Description
               </label>
 
               <textarea
+                id="description"
                 name="description"
                 placeholder="Describe the role, responsibilities and requirements..."
                 value={formData.description}
                 onChange={handleChange}
-                rows="7"
+                rows="8"
                 required
               />
 
+              <small>
+                Include responsibilities,
+                requirements and important
+                expectations for the role.
+              </small>
             </div>
-
-            {/* Buttons */}
 
             <div className="form-actions">
 
@@ -236,7 +254,9 @@ function CreateJob() {
                 type="button"
                 className="secondary-button"
                 onClick={() =>
-                  navigate("/recruiter-dashboard")
+                  navigate(
+                    "/recruiter-dashboard"
+                  )
                 }
               >
                 Cancel
@@ -259,7 +279,6 @@ function CreateJob() {
         </div>
 
       </main>
-
     </div>
   );
 }

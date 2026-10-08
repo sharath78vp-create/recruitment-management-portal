@@ -22,16 +22,29 @@ function Applicants() {
           `/applications/job/${jobId}`
         );
 
-        setApplications(
-          response.data.applications
-        );
+        const fetchedApplications =
+          response.data.applications || [];
 
-        if (
-          response.data.applications.length > 0
-        ) {
+        setApplications(fetchedApplications);
+
+        if (fetchedApplications.length > 0) {
           setJob(
-            response.data.applications[0].job
+            fetchedApplications[0].job
           );
+        } else {
+          try {
+            const jobResponse =
+              await API.get(
+                `/jobs/${jobId}`
+              );
+
+            setJob(jobResponse.data);
+          } catch (jobError) {
+            console.error(
+              "Failed to fetch job:",
+              jobError
+            );
+          }
         }
       } catch (error) {
         console.error(
@@ -93,19 +106,40 @@ function Applicants() {
     return `application-status ${status}`;
   };
 
-  const getResumeUrl = (resumePath) => {
-    if (!resumePath) {
-      return null;
+  const formatStatus = (status) => {
+    if (!status) {
+      return "Applied";
     }
 
-    return `http://localhost:5000${resumePath}`;
+    return (
+      status.charAt(0).toUpperCase() +
+      status.slice(1)
+    );
   };
+
+ const getResumeUrl = (resumePath) => {
+  if (!resumePath) {
+    return null;
+  }
+
+  const apiUrl =
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:5000/api";
+
+  const serverUrl = apiUrl.replace(
+    "/api",
+    ""
+  );
+
+  return `${serverUrl}${resumePath}`;
+};
 
   return (
     <div className="dashboard-page">
       <Navbar />
 
       <main className="dashboard-container">
+
         <button
           className="back-button"
           onClick={() =>
@@ -117,24 +151,40 @@ function Applicants() {
           ← Back to Dashboard
         </button>
 
-        <div className="dashboard-header">
+        {/* ============================================
+            HEADER
+            ============================================ */}
+
+        <div className="applicants-page-header">
+
           <div>
+            <span className="eyebrow">
+              Candidate management
+            </span>
+
             <h1>
               {job?.title || "Job"} — Applicants
             </h1>
 
             {job?.company && (
-              <p>{job.company}</p>
+              <p>
+                {job.company}
+              </p>
             )}
           </div>
 
-          <div className="candidate-stat">
+          <div className="applicants-count-card">
             <strong>
               {applications.length}
             </strong>
 
-            <span>Applicants</span>
+            <span>
+              {applications.length === 1
+                ? "Applicant"
+                : "Applicants"}
+            </span>
           </div>
+
         </div>
 
         {error && (
@@ -144,126 +194,197 @@ function Applicants() {
         )}
 
         {loading ? (
-          <p>Loading applicants...</p>
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+
+            <p>
+              Loading applicants...
+            </p>
+          </div>
         ) : applications.length === 0 ? (
           <div className="empty-state">
+
+            <div className="empty-state-icon">
+              @
+            </div>
+
             <h3>No applications yet</h3>
 
             <p>
-              Candidates who apply for this job
-              will appear here.
+              Candidates who apply for this
+              position will appear here.
             </p>
+
           </div>
         ) : (
-          <div className="applications-list">
-            {applications.map(
-              (application) => (
-                <div
-                  className="application-card"
-                  key={application._id}
-                >
-                  <div className="application-main">
-                    <h2>
-                      {application.candidate
-                        ?.name ||
-                        "Unknown Candidate"}
-                    </h2>
+          <section className="applicants-section">
 
-                    <p className="job-company">
-                      {application.candidate
-                        ?.email ||
-                        "No email available"}
-                    </p>
+            <div className="applicants-section-header">
+              <div>
+                <h2>
+                  Applications received
+                </h2>
 
-                    <p className="application-date">
-                      Applied on{" "}
-                      {new Date(
-                        application.createdAt
-                      ).toLocaleDateString()}
-                    </p>
+                <p>
+                  Review candidates and update
+                  their application status.
+                </p>
+              </div>
+            </div>
 
-                    {application.resume ? (
-                      <a
-                        href={getResumeUrl(
-                          application.resume
+            <div className="applications-list">
+
+              {applications.map(
+                (application) => (
+                  <article
+                    className="applicant-card"
+                    key={application._id}
+                  >
+
+                    <div className="applicant-main">
+
+                      <div className="applicant-profile">
+
+                        <div className="candidate-avatar">
+                          {application.candidate
+                            ?.name
+                            ?.charAt(0)
+                            .toUpperCase() ||
+                            "C"}
+                        </div>
+
+                        <div>
+                          <h2>
+                            {application
+                              .candidate
+                              ?.name ||
+                              "Unknown Candidate"}
+                          </h2>
+
+                          <p>
+                            {application
+                              .candidate
+                              ?.email ||
+                              "No email available"}
+                          </p>
+                        </div>
+
+                      </div>
+
+                      <div className="applicant-meta">
+
+                        <span>
+                          Applied on{" "}
+                          {new Date(
+                            application.createdAt
+                          ).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )}
+                        </span>
+
+                        {application.resume && (
+                          <a
+                            href={getResumeUrl(
+                              application.resume
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="resume-button"
+                          >
+                            📄 View Resume
+                          </a>
                         )}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="resume-button"
-                      >
-                        📄 View Resume
-                      </a>
-                    ) : (
-                      <span className="no-resume">
-                        No resume uploaded
-                      </span>
-                    )}
-                  </div>
 
-                  <div className="applicant-actions">
-                    <span
-                      className={getStatusClass(
-                        application.status
-                      )}
-                    >
-                      {application.status}
-                    </span>
+                        {!application.resume && (
+                          <span className="no-resume">
+                            No resume uploaded
+                          </span>
+                        )}
 
-                    <div className="status-buttons">
-                      <button
-                        className="status-button shortlist-button"
-                        disabled={
-                          updatingId ===
-                          application._id
-                        }
-                        onClick={() =>
-                          updateStatus(
-                            application._id,
-                            "shortlisted"
-                          )
-                        }
-                      >
-                        Shortlist
-                      </button>
+                      </div>
 
-                      <button
-                        className="status-button select-button"
-                        disabled={
-                          updatingId ===
-                          application._id
-                        }
-                        onClick={() =>
-                          updateStatus(
-                            application._id,
-                            "selected"
-                          )
-                        }
-                      >
-                        Select
-                      </button>
-
-                      <button
-                        className="status-button reject-button"
-                        disabled={
-                          updatingId ===
-                          application._id
-                        }
-                        onClick={() =>
-                          updateStatus(
-                            application._id,
-                            "rejected"
-                          )
-                        }
-                      >
-                        Reject
-                      </button>
                     </div>
-                  </div>
-                </div>
-              )
-            )}
-          </div>
+
+                    <div className="applicant-actions">
+
+                      <span
+                        className={getStatusClass(
+                          application.status
+                        )}
+                      >
+                        {formatStatus(
+                          application.status
+                        )}
+                      </span>
+
+                      <div className="status-buttons">
+
+                        <button
+                          className="status-button shortlist-button"
+                          disabled={
+                            updatingId ===
+                            application._id
+                          }
+                          onClick={() =>
+                            updateStatus(
+                              application._id,
+                              "shortlisted"
+                            )
+                          }
+                        >
+                          Shortlist
+                        </button>
+
+                        <button
+                          className="status-button select-button"
+                          disabled={
+                            updatingId ===
+                            application._id
+                          }
+                          onClick={() =>
+                            updateStatus(
+                              application._id,
+                              "selected"
+                            )
+                          }
+                        >
+                          Select
+                        </button>
+
+                        <button
+                          className="status-button reject-button"
+                          disabled={
+                            updatingId ===
+                            application._id
+                          }
+                          onClick={() =>
+                            updateStatus(
+                              application._id,
+                              "rejected"
+                            )
+                          }
+                        >
+                          Reject
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  </article>
+                )
+              )}
+
+            </div>
+
+          </section>
         )}
+
       </main>
     </div>
   );

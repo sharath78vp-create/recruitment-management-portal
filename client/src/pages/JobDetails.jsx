@@ -21,6 +21,7 @@ function JobDetails() {
     const fetchJob = async () => {
       try {
         const response = await API.get(`/jobs/${id}`);
+
         setJob(response.data);
       } catch (error) {
         console.error(
@@ -126,7 +127,11 @@ function JobDetails() {
         <Navbar />
 
         <main className="dashboard-container">
-          <p>Loading job details...</p>
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+
+            <p>Loading job details...</p>
+          </div>
         </main>
       </div>
     );
@@ -139,7 +144,16 @@ function JobDetails() {
 
         <main className="dashboard-container">
           <div className="empty-state">
+            <div className="empty-state-icon">
+              !
+            </div>
+
             <h3>Job not found</h3>
+
+            <p>
+              This job may have been removed or
+              is no longer available.
+            </p>
 
             <button
               className="primary-button"
@@ -162,6 +176,7 @@ function JobDetails() {
       <Navbar />
 
       <main className="dashboard-container">
+
         <button
           className="back-button"
           onClick={() =>
@@ -173,141 +188,225 @@ function JobDetails() {
           ← Back to Jobs
         </button>
 
-        <div className="job-details-card">
-          <div className="job-details-header">
-            <div>
-              <h1>{job.title}</h1>
+        <div className="job-details-layout">
 
-              <p className="job-company">
-                {job.company}
-              </p>
-            </div>
-          </div>
+          {/* ============================================
+              MAIN JOB INFORMATION
+              ============================================ */}
 
-          {applicationMessage && (
-            <div className="success-message">
-              {applicationMessage}
-            </div>
-          )}
+          <div className="job-details-main">
 
-          {applicationError && (
-            <div className="error-message">
-              {applicationError}
-            </div>
-          )}
+            <section className="job-details-card">
 
-          <div className="job-details-info">
-            <span>
-              📍 {job.location}
-            </span>
+              <div className="job-details-header">
+                <div className="company-avatar job-details-avatar">
+                  {job.company
+                    ?.charAt(0)
+                    .toUpperCase() || "C"}
+                </div>
 
-            <span>
-              💼{" "}
-              {job.experience ||
-                "Not specified"}
-            </span>
-
-            <span>
-              💰{" "}
-              {job.salary ||
-                "Not specified"}
-            </span>
-          </div>
-
-          <hr />
-
-          <section className="job-description">
-            <h2>Job Description</h2>
-
-            <p>{job.description}</p>
-          </section>
-
-          <section className="job-description">
-            <h2>Required Skills</h2>
-
-            <div className="skills-container">
-              {job.skills.map(
-                (skill, index) => (
-                  <span
-                    className="skill-tag"
-                    key={index}
-                  >
-                    {skill}
+                <div>
+                  <span className="eyebrow">
+                    Job opportunity
                   </span>
-                )
+
+                  <h1>{job.title}</h1>
+
+                  <p className="job-company">
+                    {job.company}
+                  </p>
+                </div>
+              </div>
+
+              <div className="job-details-info">
+
+                <span>
+                  <strong>📍</strong>
+                  {job.location}
+                </span>
+
+                <span>
+                  <strong>💼</strong>
+                  {job.experience ||
+                    "Not specified"}
+                </span>
+
+                <span>
+                  <strong>₹</strong>
+                  {job.salary ||
+                    "Not specified"}
+                </span>
+
+              </div>
+
+              <hr />
+
+              <section className="job-description">
+                <h2>About the role</h2>
+
+                <p>
+                  {job.description}
+                </p>
+              </section>
+
+              <section className="job-description">
+                <h2>Required skills</h2>
+
+                <div className="skills-container">
+                  {job.skills?.map(
+                    (skill, index) => (
+                      <span
+                        className="skill-tag"
+                        key={`${skill}-${index}`}
+                      >
+                        {skill}
+                      </span>
+                    )
+                  )}
+                </div>
+              </section>
+
+              {job.recruiter && (
+                <section className="job-description recruiter-section">
+
+                  <h2>Posted by</h2>
+
+                  <div className="recruiter-info">
+                    <div className="recruiter-avatar">
+                      {job.recruiter.name
+                        ?.charAt(0)
+                        .toUpperCase() || "R"}
+                    </div>
+
+                    <div>
+                      <strong>
+                        {job.recruiter.name}
+                      </strong>
+
+                      {job.recruiter.email && (
+                        <span>
+                          {job.recruiter.email}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                </section>
               )}
-            </div>
-          </section>
 
-          {job.recruiter && (
-            <section className="job-description">
-              <h2>Recruiter</h2>
-
-              <p>
-                {job.recruiter.name}
-              </p>
             </section>
-          )}
 
-          <hr />
+          </div>
 
-          <section className="apply-section">
-            <h2>Apply for this Job</h2>
+          {/* ============================================
+              APPLICATION SIDEBAR
+              ============================================ */}
 
-            <p className="apply-description">
-              Upload your latest resume to
-              apply for this position.
-            </p>
+          <aside className="job-apply-sidebar">
 
-            <div className="resume-upload-box">
-              <label
-                htmlFor="resume-input"
-                className="resume-upload-label"
-              >
-                Choose Resume
-              </label>
+            <div className="apply-card">
 
-              <input
-                id="resume-input"
-                type="file"
-                accept=".pdf,application/pdf"
-                onChange={
-                  handleResumeChange
-                }
-              />
+              <div className="apply-card-heading">
+                <span className="apply-icon">
+                  ✓
+                </span>
 
-              <small>
-                PDF only • Maximum size: 5 MB
-              </small>
+                <div>
+                  <h2>Apply for this job</h2>
 
-              {resume && (
-                <div className="selected-resume">
-                  <span>
-                    📄 {resume.name}
-                  </span>
+                  <p>
+                    Submit your latest resume
+                    to apply.
+                  </p>
+                </div>
+              </div>
 
-                  <span>
-                    {(
-                      resume.size /
-                      (1024 * 1024)
-                    ).toFixed(2)}{" "}
-                    MB
-                  </span>
+              {applicationMessage && (
+                <div className="success-message">
+                  {applicationMessage}
                 </div>
               )}
+
+              {applicationError && (
+                <div className="error-message">
+                  {applicationError}
+                </div>
+              )}
+
+              <div className="resume-upload-box">
+
+                <label
+                  htmlFor="resume-input"
+                  className="resume-upload-label"
+                >
+                  <span className="upload-icon">
+                    ↑
+                  </span>
+
+                  <span>
+                    Choose your resume
+                  </span>
+                </label>
+
+                <input
+                  id="resume-input"
+                  type="file"
+                  accept=".pdf,application/pdf"
+                  onChange={
+                    handleResumeChange
+                  }
+                />
+
+                <small>
+                  PDF only · Maximum size: 5 MB
+                </small>
+
+                {resume && (
+                  <div className="selected-resume">
+
+                    <div className="selected-resume-name">
+                      <span>📄</span>
+
+                      <span>
+                        {resume.name}
+                      </span>
+                    </div>
+
+                    <span>
+                      {(
+                        resume.size /
+                        (1024 * 1024)
+                      ).toFixed(2)}{" "}
+                      MB
+                    </span>
+
+                  </div>
+                )}
+
+              </div>
+
+              <button
+                className="primary-button apply-button"
+                onClick={handleApply}
+                disabled={applying}
+              >
+                {applying
+                  ? "Submitting..."
+                  : "Submit Application"}
+              </button>
+
+              <p className="apply-note">
+                By submitting your application,
+                your resume will be shared with
+                the recruiter.
+              </p>
+
             </div>
 
-            <button
-              className="primary-button apply-button"
-              onClick={handleApply}
-              disabled={applying}
-            >
-              {applying
-                ? "Submitting Application..."
-                : "Submit Application"}
-            </button>
-          </section>
+          </aside>
+
         </div>
+
       </main>
     </div>
   );

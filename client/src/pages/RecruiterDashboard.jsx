@@ -77,9 +77,6 @@ function RecruiterDashboard() {
     setDeletingId(jobId);
 
     try {
-      // Fetch the number of applications BEFORE deleting
-      // because the backend deletes those applications
-      // together with the job.
       let deletedJobApplicationCount = 0;
 
       try {
@@ -133,110 +130,212 @@ function RecruiterDashboard() {
       <Navbar />
 
       <main className="dashboard-container">
-        <div className="dashboard-header">
+
+        {/* ============================================
+            HEADER
+            ============================================ */}
+
+        <div className="recruiter-hero">
+
           <div>
-            <h1>Recruiter Dashboard</h1>
+            <span className="eyebrow">
+              Recruiter workspace
+            </span>
+
+            <h1>
+              Manage your
+              <span> hiring pipeline.</span>
+            </h1>
 
             <p>
-              Welcome back, {user?.name}
+              Create job opportunities, review
+              candidates and manage applications
+              from one place.
             </p>
           </div>
 
           <button
-            className="primary-button dashboard-action"
+            className="primary-button recruiter-post-button"
             onClick={() =>
               navigate("/create-job")
             }
           >
             + Post New Job
           </button>
+
         </div>
 
-        <div className="stats-grid">
-          <div className="stat-card">
-            <span className="stat-label">
-              Jobs Posted
-            </span>
+        {/* ============================================
+            STATS
+            ============================================ */}
 
-            <strong className="stat-number">
-              {loading ? "—" : jobs.length}
-            </strong>
+        <div className="stats-grid recruiter-stats-grid">
+
+          <div className="stat-card recruiter-stat-card">
+            <div className="recruiter-stat-icon">
+              #
+            </div>
+
+            <div>
+              <span className="stat-label">
+                Jobs Posted
+              </span>
+
+              <strong className="stat-number">
+                {loading ? "—" : jobs.length}
+              </strong>
+            </div>
           </div>
 
-          <div className="stat-card">
-            <span className="stat-label">
-              Active Jobs
-            </span>
+          <div className="stat-card recruiter-stat-card">
+            <div className="recruiter-stat-icon">
+              ✓
+            </div>
 
-            <strong className="stat-number">
-              {loading ? "—" : jobs.length}
-            </strong>
+            <div>
+              <span className="stat-label">
+                Active Jobs
+              </span>
+
+              <strong className="stat-number">
+                {loading ? "—" : jobs.length}
+              </strong>
+            </div>
           </div>
 
-          <div className="stat-card">
-            <span className="stat-label">
-              Applications
-            </span>
+          <div className="stat-card recruiter-stat-card">
+            <div className="recruiter-stat-icon">
+              @
+            </div>
 
-            <strong className="stat-number">
-              {loading
-                ? "—"
-                : applicationCount}
-            </strong>
+            <div>
+              <span className="stat-label">
+                Applications
+              </span>
+
+              <strong className="stat-number">
+                {loading
+                  ? "—"
+                  : applicationCount}
+              </strong>
+            </div>
           </div>
+
         </div>
+
+        {/* ============================================
+            JOB POSTINGS
+            ============================================ */}
 
         <section className="dashboard-section">
-          <div className="section-header">
-            <h2>Your Job Postings</h2>
+
+          <div className="section-header recruiter-section-header">
+
+            <div>
+              <h2>Your Job Postings</h2>
+
+              <p>
+                Manage the roles currently
+                posted by you.
+              </p>
+            </div>
+
+            {!loading && (
+              <span className="section-result-count">
+                {jobs.length}{" "}
+                {jobs.length === 1
+                  ? "job"
+                  : "jobs"}
+              </span>
+            )}
+
           </div>
 
           {loading ? (
-            <p>Loading jobs...</p>
+            <div className="loading-state">
+              <div className="loading-spinner"></div>
+
+              <p>
+                Loading your job postings...
+              </p>
+            </div>
           ) : jobs.length === 0 ? (
             <div className="empty-state">
+
+              <div className="empty-state-icon">
+                +
+              </div>
+
               <h3>No jobs posted yet</h3>
 
               <p>
-                Start by creating your first
-                job posting.
+                Create your first job posting
+                to start receiving applications.
               </p>
+
+              <button
+                className="primary-button"
+                onClick={() =>
+                  navigate("/create-job")
+                }
+              >
+                Create Your First Job
+              </button>
+
             </div>
           ) : (
-            <div className="jobs-grid">
+            <div className="recruiter-jobs-grid">
+
               {jobs.map((job) => (
-                <div
-                  className="job-dashboard-card"
+                <article
+                  className="recruiter-job-card"
                   key={job._id}
                 >
-                  <h3>{job.title}</h3>
 
-                  <p className="job-company">
-                    {job.company}
-                  </p>
+                  <div className="recruiter-job-top">
 
-                  <p>
-                    📍 {job.location}
-                  </p>
+                    <div className="company-avatar">
+                      {job.company
+                        ?.charAt(0)
+                        .toUpperCase() || "C"}
+                    </div>
 
-                  <p>
-                    💼{" "}
-                    {job.experience ||
-                      "Not specified"}
-                  </p>
+                    <div>
+                      <h3>{job.title}</h3>
 
-                  <p>
-                    💰{" "}
-                    {job.salary ||
-                      "Not specified"}
-                  </p>
+                      <p className="job-company">
+                        {job.company}
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <div className="recruiter-job-info">
+
+                    <span>
+                      📍 {job.location}
+                    </span>
+
+                    <span>
+                      💼{" "}
+                      {job.experience ||
+                        "Not specified"}
+                    </span>
+
+                    <span>
+                      ₹{" "}
+                      {job.salary ||
+                        "Not specified"}
+                    </span>
+
+                  </div>
 
                   <div className="skills-container">
-                    {job.skills.map(
+                    {job.skills?.map(
                       (skill, index) => (
                         <span
                           className="skill-tag"
-                          key={index}
+                          key={`${job._id}-${index}`}
                         >
                           {skill}
                         </span>
@@ -244,7 +343,8 @@ function RecruiterDashboard() {
                     )}
                   </div>
 
-                  <div className="job-card-actions">
+                  <div className="recruiter-job-actions">
+
                     <button
                       className="view-job-button"
                       onClick={() =>
@@ -253,7 +353,7 @@ function RecruiterDashboard() {
                         )
                       }
                     >
-                      View Applicants
+                      Applicants
                     </button>
 
                     <button
@@ -264,7 +364,7 @@ function RecruiterDashboard() {
                         )
                       }
                     >
-                      Edit Job
+                      Edit
                     </button>
 
                     <button
@@ -278,14 +378,19 @@ function RecruiterDashboard() {
                     >
                       {deletingId === job._id
                         ? "Deleting..."
-                        : "Delete Job"}
+                        : "Delete"}
                     </button>
+
                   </div>
-                </div>
+
+                </article>
               ))}
+
             </div>
           )}
+
         </section>
+
       </main>
     </div>
   );

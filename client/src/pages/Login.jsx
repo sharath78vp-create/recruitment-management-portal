@@ -25,11 +25,12 @@ function Login() {
 
       const { token, user } = response.data;
 
-      // Save login information
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
 
-      // Redirect based on role
       if (user.role === "recruiter") {
         navigate("/recruiter-dashboard");
       } else {
@@ -38,7 +39,7 @@ function Login() {
     } catch (error) {
       setError(
         error.response?.data?.message ||
-          "Login failed. Please try again."
+          "Login failed. Please check your credentials."
       );
     } finally {
       setLoading(false);
@@ -48,12 +49,22 @@ function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <div className="auth-brand">
+          <div className="auth-brand-mark">
+            RP
+          </div>
 
-        <h1>Welcome Back</h1>
+          <span>Recruitment Portal</span>
+        </div>
 
-        <p className="auth-subtitle">
-          Login to your Recruitment Portal
-        </p>
+        <div className="auth-heading">
+          <h1>Welcome back</h1>
+
+          <p>
+            Sign in to continue to your
+            recruitment workspace.
+          </p>
+        </div>
 
         {error && (
           <div className="error-message">
@@ -62,48 +73,63 @@ function Login() {
         )}
 
         <form onSubmit={handleLogin}>
-
           <div className="form-group">
-            <label>Email</label>
+            <label htmlFor="email">
+              Email address
+            </label>
 
             <input
+              id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
+              autoComplete="email"
               required
             />
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label htmlFor="password">
+              Password
+            </label>
 
             <input
+              id="password"
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
+              autoComplete="current-password"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="primary-button"
+            className="primary-button auth-submit"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading
+              ? "Signing in..."
+              : "Sign in"}
           </button>
-
         </form>
 
         <p className="auth-footer">
           Don't have an account?{" "}
-          <span onClick={() => navigate("/register")}>
-            Register
+          <span
+            onClick={() =>
+              navigate("/register")
+            }
+          >
+            Create an account
           </span>
         </p>
-
       </div>
     </div>
   );

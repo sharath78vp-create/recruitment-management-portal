@@ -24,7 +24,9 @@ function EditJob() {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const response = await API.get(`/jobs/${id}`);
+        const response = await API.get(
+          `/jobs/${id}`
+        );
 
         const job = response.data;
 
@@ -38,7 +40,10 @@ function EditJob() {
           experience: job.experience || "",
         });
       } catch (error) {
-        console.error("Failed to fetch job:", error);
+        console.error(
+          "Failed to fetch job:",
+          error
+        );
 
         setError(
           error.response?.data?.message ||
@@ -81,7 +86,10 @@ function EditJob() {
 
       navigate("/recruiter-dashboard");
     } catch (error) {
-      console.error("Failed to update job:", error);
+      console.error(
+        "Failed to update job:",
+        error
+      );
 
       setError(
         error.response?.data?.message ||
@@ -98,7 +106,13 @@ function EditJob() {
         <Navbar />
 
         <main className="dashboard-container">
-          <p>Loading job...</p>
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+
+            <p>
+              Loading job details...
+            </p>
+          </div>
         </main>
       </div>
     );
@@ -109,15 +123,54 @@ function EditJob() {
       <Navbar />
 
       <main className="dashboard-container">
-        <div className="form-page-header">
-          <h1>Edit Job</h1>
 
-          <p>
-            Update the details of your job posting.
-          </p>
+        <button
+          className="back-button"
+          onClick={() =>
+            navigate(
+              "/recruiter-dashboard"
+            )
+          }
+        >
+          ← Back to Dashboard
+        </button>
+
+        <div className="form-page-header redesigned-form-header">
+
+          <div>
+            <span className="eyebrow">
+              Recruiter workspace
+            </span>
+
+            <h1>Edit Job</h1>
+
+            <p>
+              Update the details of your
+              existing job posting.
+            </p>
+          </div>
+
         </div>
 
-        <div className="job-form-card">
+        <div className="job-form-card redesigned-job-form">
+
+          <div className="form-card-heading">
+
+            <div className="form-heading-icon">
+              ✎
+            </div>
+
+            <div>
+              <h2>Job Information</h2>
+
+              <p>
+                Make changes to your job
+                listing and save them.
+              </p>
+            </div>
+
+          </div>
+
           {error && (
             <div className="error-message">
               {error}
@@ -125,11 +178,16 @@ function EditJob() {
           )}
 
           <form onSubmit={handleSubmit}>
+
             <div className="form-row">
+
               <div className="form-group">
-                <label>Job Title</label>
+                <label htmlFor="edit-title">
+                  Job Title
+                </label>
 
                 <input
+                  id="edit-title"
                   type="text"
                   name="title"
                   placeholder="e.g. Software Developer"
@@ -140,9 +198,12 @@ function EditJob() {
               </div>
 
               <div className="form-group">
-                <label>Company</label>
+                <label htmlFor="edit-company">
+                  Company
+                </label>
 
                 <input
+                  id="edit-company"
                   type="text"
                   name="company"
                   placeholder="e.g. Tech Solutions Pvt Ltd"
@@ -151,13 +212,18 @@ function EditJob() {
                   required
                 />
               </div>
+
             </div>
 
             <div className="form-row">
+
               <div className="form-group">
-                <label>Location</label>
+                <label htmlFor="edit-location">
+                  Location
+                </label>
 
                 <input
+                  id="edit-location"
                   type="text"
                   name="location"
                   placeholder="e.g. Hyderabad"
@@ -168,9 +234,12 @@ function EditJob() {
               </div>
 
               <div className="form-group">
-                <label>Experience</label>
+                <label htmlFor="edit-experience">
+                  Experience
+                </label>
 
                 <input
+                  id="edit-experience"
                   type="text"
                   name="experience"
                   placeholder="e.g. Fresher / 1-2 years"
@@ -178,56 +247,80 @@ function EditJob() {
                   onChange={handleChange}
                 />
               </div>
+
+            </div>
+
+            <div className="form-row">
+
+              <div className="form-group">
+                <label htmlFor="edit-salary">
+                  Salary
+                </label>
+
+                <input
+                  id="edit-salary"
+                  type="text"
+                  name="salary"
+                  placeholder="e.g. 6-8 LPA"
+                  value={formData.salary}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="edit-skills">
+                  Required Skills
+                </label>
+
+                <input
+                  id="edit-skills"
+                  type="text"
+                  name="skills"
+                  placeholder="Java, React, SQL, Node.js"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  required
+                />
+
+                <small>
+                  Separate skills using commas.
+                </small>
+              </div>
+
             </div>
 
             <div className="form-group">
-              <label>Salary</label>
 
-              <input
-                type="text"
-                name="salary"
-                placeholder="e.g. 6-8 LPA"
-                value={formData.salary}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Skills</label>
-
-              <input
-                type="text"
-                name="skills"
-                placeholder="Java, React, SQL, Node.js"
-                value={formData.skills}
-                onChange={handleChange}
-                required
-              />
-
-              <small>
-                Separate skills using commas.
-              </small>
-            </div>
-
-            <div className="form-group">
-              <label>Job Description</label>
+              <label htmlFor="edit-description">
+                Job Description
+              </label>
 
               <textarea
+                id="edit-description"
                 name="description"
                 placeholder="Describe the role, responsibilities and requirements..."
                 value={formData.description}
                 onChange={handleChange}
-                rows="7"
+                rows="8"
                 required
               />
+
+              <small>
+                Keep the description clear and
+                relevant to the position.
+              </small>
+
             </div>
 
             <div className="form-actions">
+
               <button
                 type="button"
                 className="secondary-button"
                 onClick={() =>
-                  navigate("/recruiter-dashboard")
+                  navigate(
+                    "/recruiter-dashboard"
+                  )
                 }
               >
                 Cancel
@@ -242,9 +335,13 @@ function EditJob() {
                   ? "Saving Changes..."
                   : "Save Changes"}
               </button>
+
             </div>
+
           </form>
+
         </div>
+
       </main>
     </div>
   );
